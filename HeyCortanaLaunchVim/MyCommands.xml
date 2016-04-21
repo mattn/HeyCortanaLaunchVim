@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.2">
+  <CommandSet xml:lang="ja-jp" Name="HayCortanaLaunchVim">
+    <CommandPrefix>ねぇ</CommandPrefix>
+    <Example>ビムを起動して</Example>
+    <Command Name="OpenVim">
+      <Example>ビムを起動して</Example>
+      <ListenFor>ビムを起動して[下さい]</ListenFor>
+      <Feedback>ビムを起動しています</Feedback>
+      <Navigate/>
+    </Command>
+  </CommandSet>
+</VoiceCommands>

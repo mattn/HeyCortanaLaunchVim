@@ -5,8 +5,12 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.VoiceCommands;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.SpeechRecognition;
+using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -37,7 +41,7 @@ namespace HeyCortanaLaunchVim
         /// アプリケーションが特定のファイルを開くために起動されたときなどに使用されます。
         /// </summary>
         /// <param name="e">起動の要求とプロセスの詳細を表示します。</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected async override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -76,6 +80,52 @@ namespace HeyCortanaLaunchVim
                 }
                 // 現在のウィンドウがアクティブであることを確認します
                 Window.Current.Activate();
+
+                try
+                {
+                    // 俺コマンドの登録
+                    StorageFile vcdStorageFile = await Package.Current.InstalledLocation.GetFileAsync(@"MyCommands.xml");
+                    await VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(vcdStorageFile);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("ボイスコマンドの定義でエラーが発生しました", ex);
+                }
+            }
+        }
+
+        protected async override void OnActivated(IActivatedEventArgs args)
+        {
+            base.OnActivated(args);
+
+            if (args.Kind == ActivationKind.VoiceCommand)
+            {
+                VoiceCommandActivatedEventArgs commandArgs = args as VoiceCommandActivatedEventArgs;
+                SpeechRecognitionResult speechRecognitionResult = commandArgs.Result;
+                string voiceCommandName = speechRecognitionResult.RulePath[0];
+                string textSpoken = speechRecognitionResult.Text;
+                MessageDialog messageDialog = new MessageDialog("");
+
+                switch (voiceCommandName)
+                {
+                    case "OpenVim":
+                        try
+                        {
+                            Windows.Web.Http.HttpClient client = new Windows.Web.Http.HttpClient();
+                            await client.GetAsync(new Uri("http://localhost:8888/vim";
+                        }
+                        catch (Exception)
+                        {
+                            messageDialog.Content = "Failed to launch vim";
+                            await messageDialog.ShowAsync();
+                        }
+                        break;
+
+                    default:
+                        messageDialog.Content = "Unknown command";
+                        await messageDialog.ShowAsync();
+                        break;
+                }
             }
         }
 
