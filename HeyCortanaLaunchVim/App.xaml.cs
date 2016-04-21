@@ -112,7 +112,7 @@ namespace HeyCortanaLaunchVim
                         try
                         {
                             Windows.Web.Http.HttpClient client = new Windows.Web.Http.HttpClient();
-                            await client.GetAsync(new Uri("http://localhost:8888/vim";
+                            await client.GetAsync(new Uri("http://localhost:8888/vim"));
                         }
                         catch (Exception)
                         {
